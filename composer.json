@@ -1,0 +1,24 @@
+{
+  "authors": [
+    {
+      "email": "dn@phantasie-schmiede.de",
+      "name": "Daniel Ablass",
+      "role": "Developer"
+    }
+  ],
+  "description": "Integrate a scanner for bar- and QR-codes into your extension templates.",
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "psb_scanner"
+    }
+  },
+  "keywords": [
+    "barcode",
+    "qr-code",
+    "scanner",
+    "typo3"
+  ],
+  "license": "GPL-2.0-or-later",
+  "name": "psb/psb-scanner",
+  "type": "typo3-cms-extension"
+}

@@ -18,7 +18,7 @@
     "scanner",
     "typo3"
   ],
-  "license": "GPL-2.0-or-later",
+  "license": "GPL-3.0-or-later",
   "name": "psb/psb-scanner",
   "type": "typo3-cms-extension"
 }

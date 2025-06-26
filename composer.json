@@ -9,7 +9,7 @@
   "description": "Integrate a scanner for bar- and QR-codes into your extension templates.",
   "extra": {
     "typo3/cms": {
-      "extension-key": "psb_scanner"
+      "extension-key": "scanner"
     }
   },
   "keywords": [
@@ -19,6 +19,6 @@
     "typo3"
   ],
   "license": "GPL-3.0-or-later",
-  "name": "psb/psb-scanner",
+  "name": "psbits/scanner",
   "type": "typo3-cms-extension"
 }

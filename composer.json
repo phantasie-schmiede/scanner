@@ -24,7 +24,13 @@
     "typo3/cms-core": "^11.5|^12.4|^13.4"
   },
   "require-dev": {
-    "roave/security-advisories": "dev-latest"
+    "roave/security-advisories": "dev-latest",
+    "phpunit/phpunit": "^9.6 || ^10.5 || ^11.5"
   },
-  "type": "typo3-cms-extension"
+  "type": "typo3-cms-extension",
+  "autoload": {
+    "psr-4": {
+      "PSBits\\Scanner\\": "Classes/"
+    }
+  }
 }

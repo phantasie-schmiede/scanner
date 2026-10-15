@@ -1,0 +1,13 @@
+plugin {
+  tx_scanner {
+    persistence {
+      storagePid = {$plugin.tx_scanner.persistence.storagePid}
+    }
+
+    view {
+      partialRootPaths.10 = {$plugin.tx_scanner.view.partialRootPath}
+    }
+  }
+}
+
+module.tx_scanner.persistence.storagePid = {$plugin.tx_scanner.persistence.storagePid}

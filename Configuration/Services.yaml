@@ -1,0 +1,9 @@
+services:
+  _defaults:
+    autoconfigure: true
+    autowire: true
+    public: false
+
+  PSBits\Scanner\:
+    exclude: '../Classes/Domain/Model/*'
+    resource: '../Classes/*'

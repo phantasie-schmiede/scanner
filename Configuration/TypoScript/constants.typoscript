@@ -1,0 +1,11 @@
+plugin.tx_scanner {
+  persistence {
+    # cat=plugin.tx_scanner//a; type=int+; label=Default storage PID
+    storagePid =
+  }
+
+  view {
+    # cat=plugin.tx_scanner//b; type=string; label=Path to the partials
+    partialRootPath = EXT:scanner/Resources/Private/Partials/
+  }
+}

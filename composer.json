@@ -6,10 +6,20 @@
             "role": "Developer"
         }
     ],
+    "config": {
+        "allow-plugins": {
+            "typo3/class-alias-loader": true,
+            "typo3/cms-composer-installers": true
+        },
+        "bin-dir": ".Build/bin",
+        "sort-packages": true,
+        "vendor-dir": ".Build/vendor"
+    },
     "description": "Integrate a scanner for bar- and QR-codes into your extension templates.",
     "extra": {
         "typo3/cms": {
-            "extension-key": "scanner"
+            "extension-key": "scanner",
+            "web-dir": ".Build/public"
         }
     },
     "keywords": [

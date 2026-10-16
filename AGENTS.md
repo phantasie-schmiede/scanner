@@ -59,5 +59,3 @@ For multi-step tasks, state a brief plan:
 2. [Step] → verify: [check]
 3. [Step] → verify: [check]
 ```
-
-Please read the repository specific instructions in `.github/copilot-instructions.md`.

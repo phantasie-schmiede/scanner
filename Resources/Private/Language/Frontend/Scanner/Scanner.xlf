@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+    <file
+        datatype="plaintext"
+        date="2026-10-22T00:00:00+01:00"
+        original="messages"
+        product-name="scanner"
+        source-language="en">
+        <body>
+            <trans-unit id="startCamera">
+                <source>Start camera</source>
+            </trans-unit>
+            <trans-unit id="stopCamera">
+                <source>Stop camera</source>
+            </trans-unit>
+            <trans-unit id="uploadImage">
+                <source>Upload image</source>
+            </trans-unit>
+            <trans-unit id="ready">
+                <source>Ready.</source>
+            </trans-unit>
+            <trans-unit id="liveScanActive">
+                <source>Live scan active.</source>
+            </trans-unit>
+            <trans-unit id="liveScanStopped">
+                <source>Live scan stopped.</source>
+            </trans-unit>
+            <trans-unit id="scanSuccessful">
+                <source>Scan successful.</source>
+            </trans-unit>
+            <trans-unit id="noCodeFound">
+                <source>No barcode found.</source>
+            </trans-unit>
+            <trans-unit id="error">
+                <source>Error: {0}</source>
+            </trans-unit>
+            <trans-unit id="cameraRequiresHttps">
+                <source>Camera access requires HTTPS or localhost.</source>
+            </trans-unit>
+            <trans-unit id="cameraGranted">
+                <source>Camera access granted.</source>
+            </trans-unit>
+            <trans-unit id="cameraDenied">
+                <source>Camera access denied.</source>
+            </trans-unit>
+            <trans-unit id="cameraNotSupported">
+                <source>Camera API is not supported by this browser.</source>
+            </trans-unit>
+            <trans-unit id="videoTargetMissing">
+                <source>No video element configured for live scanning.</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

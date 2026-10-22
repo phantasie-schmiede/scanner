@@ -1,27 +1,70 @@
-<html data-namespace-typo3-fluid="true"
-      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers">
-<f:asset.script identifier="psbits-scanner-zxing" src="EXT:scanner/Resources/Public/JavaScript/Vendors/zxing-wasm/zxing_reader.js" />
-<f:asset.script identifier="psbits-scanner-api" src="EXT:scanner/Resources/Public/JavaScript/scanner-api.js" />
+<html
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers">
+    <f:asset.script
+        identifier="psbits-scanner-zxing"
+        src="EXT:scanner/Resources/Public/JavaScript/Vendors/zxing-wasm/zxing_reader.js" />
+    <f:asset.script
+        identifier="psbits-scanner-api"
+        src="EXT:scanner/Resources/Public/JavaScript/scanner-api.js" />
 
-<div
-    data-psbits-scanner
-    data-api-base="/scanner/api/v1"
-    data-zxing-wasm="{f:uri.resource(path: 'JavaScript/Vendors/zxing-wasm/zxing_reader.wasm')}">
-    <div>
-        <button type="button" data-scanner-start>Kamera starten</button>
-        <button type="button" data-scanner-stop>Kamera stoppen</button>
+    <div
+        data-api-base="/scanner/api/v1"
+        data-psbits-scanner
+        data-zxing-wasm="{f:uri.resource(path: 'JavaScript/Vendors/zxing-wasm/zxing_reader.wasm')}">
+        <script
+            data-psbits-scanner-i18n
+            type="application/json">
+            {
+                "liveScanActive": "<f:translate key="LLL:EXT:scanner/Resources/Private/Language/Frontend/Scanner/Scanner.xlf:liveScanActive" />",
+                "liveScanStopped": "<f:translate key="LLL:EXT:scanner/Resources/Private/Language/Frontend/Scanner/Scanner.xlf:liveScanStopped" />",
+                "scanSuccessful": "<f:translate key="LLL:EXT:scanner/Resources/Private/Language/Frontend/Scanner/Scanner.xlf:scanSuccessful" />",
+                "noCodeFound": "<f:translate key="LLL:EXT:scanner/Resources/Private/Language/Frontend/Scanner/Scanner.xlf:noCodeFound" />",
+                "error": "<f:translate key="LLL:EXT:scanner/Resources/Private/Language/Frontend/Scanner/Scanner.xlf:error" />",
+                "cameraRequiresHttps": "<f:translate key="LLL:EXT:scanner/Resources/Private/Language/Frontend/Scanner/Scanner.xlf:cameraRequiresHttps" />",
+                "cameraGranted": "<f:translate key="LLL:EXT:scanner/Resources/Private/Language/Frontend/Scanner/Scanner.xlf:cameraGranted" />",
+                "cameraDenied": "<f:translate key="LLL:EXT:scanner/Resources/Private/Language/Frontend/Scanner/Scanner.xlf:cameraDenied" />",
+                "cameraNotSupported": "<f:translate key="LLL:EXT:scanner/Resources/Private/Language/Frontend/Scanner/Scanner.xlf:cameraNotSupported" />",
+                "videoTargetMissing": "<f:translate key="LLL:EXT:scanner/Resources/Private/Language/Frontend/Scanner/Scanner.xlf:videoTargetMissing" />"
+            }
+        </script>
+
+        <div>
+            <button
+                data-scanner-start
+                type="button">
+                <f:translate
+                    key="LLL:EXT:scanner/Resources/Private/Language/Frontend/Scanner/Scanner.xlf:startCamera" />
+            </button>
+            <button
+                data-scanner-stop
+                type="button">
+                <f:translate
+                    key="LLL:EXT:scanner/Resources/Private/Language/Frontend/Scanner/Scanner.xlf:stopCamera" />
+            </button>
+        </div>
+
+        <video
+            autoplay
+            data-scanner-video
+            muted
+            playsinline></video>
+
+        <div>
+            <label>
+                <f:translate
+                    key="LLL:EXT:scanner/Resources/Private/Language/Frontend/Scanner/Scanner.xlf:uploadImage" />
+                <input
+                    accept="image/png,image/jpeg,image/bmp,image/gif,image/webp"
+                    data-scanner-file
+                    type="file" />
+            </label>
+        </div>
+
+        <p data-scanner-status>
+            <f:translate
+                key="LLL:EXT:scanner/Resources/Private/Language/Frontend/Scanner/Scanner.xlf:ready" />
+        </p>
+        <p data-scanner-result></p>
     </div>
-
-    <video data-scanner-video autoplay muted playsinline></video>
-
-    <div>
-        <label>
-            Bild hochladen
-            <input data-scanner-file type="file" accept="image/png,image/jpeg,image/bmp,image/gif,image/webp">
-        </label>
-    </div>
-
-    <p data-scanner-status>Bereit.</p>
-    <p data-scanner-result></p>
-</div>
 </html>

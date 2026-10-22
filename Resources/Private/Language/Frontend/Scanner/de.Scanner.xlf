@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+    <file
+        datatype="plaintext"
+        date="2026-10-22T00:00:00+01:00"
+        original="messages"
+        product-name="scanner"
+        source-language="de">
+        <body>
+            <trans-unit id="startCamera">
+                <source>Kamera starten</source>
+            </trans-unit>
+            <trans-unit id="stopCamera">
+                <source>Kamera stoppen</source>
+            </trans-unit>
+            <trans-unit id="uploadImage">
+                <source>Bild hochladen</source>
+            </trans-unit>
+            <trans-unit id="ready">
+                <source>Bereit.</source>
+            </trans-unit>
+            <trans-unit id="liveScanActive">
+                <source>Live-Scan aktiv.</source>
+            </trans-unit>
+            <trans-unit id="liveScanStopped">
+                <source>Live-Scan gestoppt.</source>
+            </trans-unit>
+            <trans-unit id="scanSuccessful">
+                <source>Scan erfolgreich.</source>
+            </trans-unit>
+            <trans-unit id="noCodeFound">
+                <source>Kein Barcode gefunden.</source>
+            </trans-unit>
+            <trans-unit id="error">
+                <source>Fehler: {0}</source>
+            </trans-unit>
+            <trans-unit id="cameraRequiresHttps">
+                <source>Kamerazugriff erfordert HTTPS oder localhost.</source>
+            </trans-unit>
+            <trans-unit id="cameraGranted">
+                <source>Kamerazugriff gewährt.</source>
+            </trans-unit>
+            <trans-unit id="cameraDenied">
+                <source>Kamerazugriff verweigert.</source>
+            </trans-unit>
+            <trans-unit id="cameraNotSupported">
+                <source>Die Kamera-API wird von diesem Browser nicht unterstützt.</source>
+            </trans-unit>
+            <trans-unit id="videoTargetMissing">
+                <source>Kein Video-Element für den Live-Scan konfiguriert.</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

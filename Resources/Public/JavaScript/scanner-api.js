@@ -44,13 +44,38 @@
             this.animationFrameId = null;
             this.detector = null;
             this.detectorInitialised = false;
+            this.i18n = {};
         }
 
         async init() {
+            this.loadI18n();
             this.bindUi();
             this.configureZxingWasm();
             await this.emitCapabilities();
             this.emit('ready', { apiBase: this.options.apiBase, formats: this.options.formats });
+        }
+
+        loadI18n() {
+            const element = this.root.querySelector('[data-psbits-scanner-i18n]');
+            if (!element) {
+                return;
+            }
+
+            try {
+                this.i18n = JSON.parse(element.textContent);
+            } catch (error) {
+                this.i18n = {};
+            }
+        }
+
+        t(key, ...args) {
+            let text = this.i18n[key] || key;
+
+            args.forEach((arg, index) => {
+                text = text.replace(`{${index}}`, String(arg));
+            });
+
+            return text;
         }
 
         configureZxingWasm() {
@@ -101,12 +126,12 @@
 
         async startCamera() {
             if (!window.isSecureContext) {
-                this.emitPermission('unavailable', 'Camera access requires HTTPS or localhost.');
+                this.emitPermission('unavailable', this.t('cameraRequiresHttps'));
                 return;
             }
 
             if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function') {
-                this.emitError('camera_not_supported', 'Camera API is not supported by this browser.');
+                this.emitError('camera_not_supported', this.t('cameraNotSupported'));
                 return;
             }
 
@@ -119,20 +144,20 @@
                 });
 
                 if (!this.videoElement) {
-                    this.emitError('video_target_missing', 'No video element configured for live scanning.');
+                    this.emitError('video_target_missing', this.t('videoTargetMissing'));
                     return;
                 }
 
                 this.videoElement.srcObject = this.stream;
                 await this.videoElement.play();
                 this.isRunning = true;
-                this.emitPermission('granted', 'Camera access granted.');
-                this.setStatus('Live-Scan aktiv.');
+                this.emitPermission('granted', this.t('cameraGranted'));
+                this.setStatus(this.t('liveScanActive'));
 
                 this.getDetector();
                 this.scanCameraFrame();
             } catch (error) {
-                this.emitPermission('denied', 'Camera access denied.');
+                this.emitPermission('denied', this.t('cameraDenied'));
                 this.emitError('camera_access_failed', error);
             }
         }
@@ -154,7 +179,7 @@
                 this.videoElement.srcObject = null;
             }
 
-            this.setStatus('Live-Scan gestoppt.');
+            this.setStatus(this.t('liveScanStopped'));
             this.emit('stopped', {});
         }
 
@@ -187,7 +212,7 @@
                     return;
                 }
 
-                this.emitError('no_code_found', 'Kein Barcode gefunden.');
+                this.emitError('no_code_found', this.t('noCodeFound'));
             } catch (error) {
                 this.emitError('image_scan_failed', error);
             }
@@ -334,7 +359,7 @@
             if (this.resultElement) {
                 this.resultElement.textContent = `${result.content} (${result.format})`;
             }
-            this.setStatus('Scan erfolgreich.');
+            this.setStatus(this.t('scanSuccessful'));
         }
 
         setStatus(message) {
@@ -354,7 +379,7 @@
         emitError(code, error) {
             const message = error instanceof Error ? error.message : String(error || 'Unknown error');
             const payload = { code, message };
-            this.setStatus(`Fehler: ${message}`);
+            this.setStatus(this.t('error', message));
             this.emit('error', payload);
             if (typeof this.options.onError === 'function') {
                 this.options.onError(payload);

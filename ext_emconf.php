@@ -3,7 +3,7 @@
 $EM_CONF[$_EXTKEY] = [
     'author'           => 'Daniel Ablass',
     'author_email'     => 'dn@phantasie-schmiede.de',
-    'category'         => 'module',
+    'category'         => 'misc',
     'clearCacheOnLoad' => false,
     'constraints'      => [
         'conflicts' => [],

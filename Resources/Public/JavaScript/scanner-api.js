@@ -43,6 +43,7 @@
             this.isRunning = false;
             this.animationFrameId = null;
             this.detector = null;
+            this.detectorInitialised = false;
         }
 
         async init() {
@@ -128,7 +129,7 @@
                 this.emitPermission('granted', 'Camera access granted.');
                 this.setStatus('Live-Scan aktiv.');
 
-                this.detector = await this.createDetector();
+                this.getDetector();
                 this.scanCameraFrame();
             } catch (error) {
                 this.emitPermission('denied', 'Camera access denied.');
@@ -165,6 +166,7 @@
             try {
                 const result = await this.detectFromSource(this.videoElement, 'camera');
                 if (result) {
+                    this.stopCamera();
                     await this.handleScanResult(result);
                 }
             } catch (error) {
@@ -191,21 +193,28 @@
             }
         }
 
-        async createDetector() {
+        getDetector() {
+            if (this.detectorInitialised) {
+                return this.detector;
+            }
+
+            this.detectorInitialised = true;
+
             if ('BarcodeDetector' in window) {
                 try {
-                    return new window.BarcodeDetector({ formats: this.options.formats });
+                    this.detector = new window.BarcodeDetector({ formats: this.options.formats });
                 } catch (error) {
                     this.emitError('barcode_detector_init_failed', error);
                 }
             }
 
-            return null;
+            return this.detector;
         }
 
         async detectFromSource(source, sourceType) {
-            if (this.detector) {
-                const detections = await this.detector.detect(source);
+            const detector = this.getDetector();
+            if (detector) {
+                const detections = await detector.detect(source);
                 if (detections && detections[0] && detections[0].rawValue) {
                     return {
                         content: detections[0].rawValue,
@@ -309,16 +318,15 @@
             return await new Promise((resolve, reject) => {
                 const img = new Image();
                 const objectUrl = URL.createObjectURL(file);
-                img.onload = () => resolve(img);
-                img.onerror = () => reject(new Error('Image loading failed.'));
+                img.onload = () => {
+                    URL.revokeObjectURL(objectUrl);
+                    resolve(img);
+                };
+                img.onerror = () => {
+                    URL.revokeObjectURL(objectUrl);
+                    reject(new Error('Image loading failed.'));
+                };
                 img.src = objectUrl;
-                img.addEventListener(
-                    'load',
-                    () => {
-                        URL.revokeObjectURL(objectUrl);
-                    },
-                    { once: true }
-                );
             });
         }
 

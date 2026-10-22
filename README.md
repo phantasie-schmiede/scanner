@@ -1,14 +1,53 @@
 # PSBits Scanner
 
-TYPO3 extension to provide reusable camera/file based barcode scanning for other extensions.
+Reusable camera- and file-based barcode scanning for other extensions. The intended use cases are
+media archiving (books, DVDs, CDs) and household management (recording purchases).
 
-## Quick start
+## Requirements
 
-1. Include the partial `Resources/Private/Partials/Scanner.html` in your Fluid template.
-2. Listen to scanner events on the scanner root element.
-3. Consume the API endpoints under `/scanner/api/v1`.
+- TYPO3: `13.4` or `14.3`
+- PHP: `8.3` or newer
+- Live camera scanning requires a secure context (HTTPS or localhost)
+- Browser: `getUserMedia` for live camera scanning. The native `BarcodeDetector` is used where
+  available; the fallback decodes with the vendored zxing-wasm reader (about 1 MB wasm binary,
+  loaded on first use)
 
-Example events emitted by the component:
+## Installation
+
+```bash
+composer require psbits/scanner
+```
+
+## Integration
+
+1. Add the scanner partials to your view configuration:
+
+   ```typoscript
+   plugin.tx_<your_extension> {
+       view {
+           partialRootPaths.20 = EXT:scanner/Resources/Private/Partials
+       }
+   }
+   ```
+
+2. Render the partial in a Fluid template:
+
+   ```html
+   <f:render partial="Scanner" />
+   ```
+
+3. Listen to the scanner events on the root element (`data-psbits-scanner`). Scan results are
+   submitted to the API automatically unless disabled:
+
+   ```javascript
+   document
+       .querySelector('[data-psbits-scanner]')
+       .addEventListener('psbits-scanner:scan', (event) => {
+           // event.detail = { content, format, source, clientTimestamp, meta }
+       });
+   ```
+
+Events emitted by the component:
 
 - `psbits-scanner:ready`
 - `psbits-scanner:capabilities`
@@ -66,6 +105,12 @@ Accepts scan results:
 }
 ```
 
+- `content` is required (1–1024 characters)
+- `format` is required and must be one of the supported formats
+- `source` is either `camera` or `image` (defaults to `camera`)
+- `clientTimestamp` is optional, any date/time string the server can parse
+- `meta` is optional, any JSON object
+
 Supported formats:
 
 - `ean_13`
@@ -83,7 +128,17 @@ Supported formats:
 - The frontend checks browser support and permission state and emits explicit events.
 - The backend validates incoming result payloads and does not persist scan contents by default.
 
-## Compatibility
+## Development
 
-- TYPO3: `11.5`, `12.4`, `13.4`
-- Browser: modern browsers with `getUserMedia`; preferred with `BarcodeDetector`; fallback decoding via the vendored zxing-wasm reader.
+```bash
+composer install
+composer qa
+```
+
+`composer qa` fixes everything that can be fixed automatically and afterwards runs all linters and the static
+analysis. The same checks run in the `CI` GitHub Actions workflow and in the `pre-commit` hook that is
+installed by `composer install`.
+
+The workflow also runs a support matrix that checks the supported TYPO3 and PHP combinations still resolve their
+dependencies, and publishes the extension to TER when a semver tag is pushed. Publishing requires the
+`TYPO3_API_TOKEN` repository secret.

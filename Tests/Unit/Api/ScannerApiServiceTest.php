@@ -16,7 +16,7 @@ final class ScannerApiServiceTest extends TestCase
         $capabilities = $service->getCapabilities(true);
 
         self::assertSame('v1', $capabilities['apiVersion']);
-        self::assertContains('qr_code', $capabilities['formats']);
+        self::assertNotContains('qr_code', $capabilities['formats']);
         self::assertContains('liveCamera', $capabilities['modes']);
         self::assertTrue($capabilities['requirements']['secureContextRequired']);
         self::assertTrue($capabilities['requirements']['isSecureContext']);

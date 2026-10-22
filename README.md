@@ -1,6 +1,6 @@
 # PSBits Scanner
 
-TYPO3 extension to provide reusable camera/file based barcode and QR scanning for other extensions.
+TYPO3 extension to provide reusable camera/file based barcode scanning for other extensions.
 
 ## Quick start
 
@@ -58,8 +58,8 @@ Accepts scan results:
 
 ```json
 {
-  "content": "...",
-  "format": "qr_code",
+  "content": "9780201379624",
+  "format": "ean_13",
   "source": "camera",
   "clientTimestamp": "2026-01-01T12:00:00+00:00",
   "meta": {}
@@ -68,7 +68,6 @@ Accepts scan results:
 
 Supported formats:
 
-- `qr_code`
 - `ean_13`
 - `ean_8`
 - `upc_a`

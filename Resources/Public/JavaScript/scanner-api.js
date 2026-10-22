@@ -1,7 +1,7 @@
 (function (global) {
     'use strict';
 
-    const DEFAULT_FORMATS = ['qr_code', 'ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39', 'itf', 'codabar'];
+    const DEFAULT_FORMATS = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39', 'itf', 'codabar'];
 
     class ScannerClient {
         constructor(rootElement, options = {}) {
@@ -159,7 +159,7 @@
                     return;
                 }
 
-                this.emitError('no_code_found', 'Kein Barcode oder QR-Code gefunden.');
+                this.emitError('no_code_found', 'Kein Barcode gefunden.');
             } catch (error) {
                 this.emitError('image_scan_failed', error);
             }

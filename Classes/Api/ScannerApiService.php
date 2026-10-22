@@ -12,7 +12,6 @@ final class ScannerApiService
      * @var string[]
      */
     private const SUPPORTED_FORMATS = [
-        'qr_code',
         'ean_13',
         'ean_8',
         'upc_a',

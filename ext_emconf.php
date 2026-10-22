@@ -13,8 +13,8 @@ $EM_CONF[$_EXTKEY] = [
         ],
         'suggests'  => [],
     ],
-    'description'      => 'Reusable scanner API and frontend component for barcode and QR code scanning',
+    'description'      => 'Reusable scanner API and frontend component for barcode scanning',
     'state'            => 'alpha',
     'title'            => 'PSBits | Scanner',
-    'version'          => '0.2.0',
+    'version'          => '0.1.0',
 ];

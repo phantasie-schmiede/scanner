@@ -1,11 +1,24 @@
-<html
-    data-namespace-typo3-fluid="true"
-    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
-    xmlns:psb="http://typo3.org/ns/PSBits/Foundation/ViewHelpers">
-    <input
-        accept="image/png,image/jpeg,image/bmp,image/gif"
-        id="ipt-file"
-        multiple
-        type="file" />
-    <button id="btn-show-scanner">show scanner</button>
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers">
+<f:asset.script identifier="psbits-scanner-quagga" src="EXT:scanner/Resources/Public/JavaScript/quagga2.min.js" />
+<f:asset.script identifier="psbits-scanner-api" src="EXT:scanner/Resources/Public/JavaScript/scanner-api.js" />
+
+<div data-psbits-scanner data-api-base="/scanner/api/v1">
+    <div>
+        <button type="button" data-scanner-start>Kamera starten</button>
+        <button type="button" data-scanner-stop>Kamera stoppen</button>
+    </div>
+
+    <video data-scanner-video autoplay muted playsinline></video>
+
+    <div>
+        <label>
+            Bild hochladen
+            <input data-scanner-file type="file" accept="image/png,image/jpeg,image/bmp,image/gif,image/webp">
+        </label>
+    </div>
+
+    <p data-scanner-status>Bereit.</p>
+    <p data-scanner-result></p>
+</div>
 </html>

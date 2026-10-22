@@ -1,82 +1,36 @@
 {
-    "authors": [
-        {
-            "email": "dn@phantasie-schmiede.de",
-            "name": "Daniel Ablass",
-            "role": "Developer"
-        }
-    ],
-    "config": {
-        "allow-plugins": {
-            "typo3/class-alias-loader": true,
-            "typo3/cms-composer-installers": true
-        },
-        "bin-dir": ".Build/bin",
-        "sort-packages": true,
-        "vendor-dir": ".Build/vendor"
-    },
-    "description": "Integrate a scanner for bar- and QR-codes into your extension templates.",
-    "extra": {
-        "typo3/cms": {
-            "extension-key": "scanner",
-            "web-dir": ".Build/public"
-        }
-    },
-    "keywords": [
-        "barcode",
-        "qr-code",
-        "scanner",
-        "typo3"
-    ],
-    "license": "GPL-3.0-or-later",
-    "name": "psbits/scanner",
-    "require": {
-        "php": "^8.3",
-        "psbits/foundation": "^4.0",
-        "typo3/cms-core": "^13.4 || ^14.3"
-    },
-    "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.95",
-        "helmich/typo3-typoscript-lint": "^3.3",
-        "phpstan/phpstan": "^2.2",
-        "psbits/qa": "@dev",
-        "roave/security-advisories": "dev-latest",
-        "saschaegerer/phpstan-typo3": "^2.1"
-    },
-    "scripts": {
-        "analyze:php": "phpstan analyse --configuration=Build/Quality/phpstan.neon.dist --no-progress",
-        "audit:composer": "composer audit --abandoned=report",
-        "fix:all": [
-            "@fix:classes",
-            "@fix:htmlxml",
-            "@fix:php"
-        ],
-        "fix:classes": "npm run fix:classes",
-        "fix:htmlxml": "npm run fix:htmlxml",
-        "fix:php": "php-cs-fixer fix --config=Build/Quality/.php-cs-fixer.dist.php --verbose",
-        "lint:all": [
-            "@analyze:php",
-            "@audit:composer",
-            "@lint:classes",
-            "@lint:htmlxml",
-            "@lint:php",
-            "@lint:typoscript",
-            "@lint:yaml",
-            "@validate:composer"
-        ],
-        "lint:classes": "npm run lint:classes",
-        "lint:htmlxml": "npm run lint:htmlxml",
-        "lint:php": "php-cs-fixer fix --config=Build/Quality/.php-cs-fixer.dist.php --dry-run --diff --verbose",
-        "lint:typoscript": "typoscript-lint --config=.Build/vendor/psbits/qa/Resources/Quality/typoscript-lint.yml --ansi Configuration/TypoScript",
-        "lint:yaml": "yamllint -c .Build/vendor/psbits/qa/Resources/Quality/yamllint.yml Configuration",
-        "post-install-cmd": [
-            "npm install",
-            ".Build/bin/qa link"
-        ],
-        "post-update-cmd": [
-            ".Build/bin/qa link"
-        ],
-        "validate:composer": "composer validate --no-check-publish"
-    },
-    "type": "typo3-cms-extension"
+  "authors": [
+    {
+      "email": "dn@phantasie-schmiede.de",
+      "name": "Daniel Ablass",
+      "role": "Developer"
+    }
+  ],
+  "description": "Integrate a scanner for bar- and QR-codes into your extension templates.",
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "scanner"
+    }
+  },
+  "keywords": [
+    "barcode",
+    "qr-code",
+    "scanner",
+    "typo3"
+  ],
+  "license": "GPL-3.0-or-later",
+  "name": "psbits/scanner",
+  "require": {
+    "typo3/cms-core": "^11.5|^12.4|^13.4"
+  },
+  "require-dev": {
+    "roave/security-advisories": "dev-latest",
+    "phpunit/phpunit": "^9.6 || ^10.5 || ^11.5"
+  },
+  "type": "typo3-cms-extension",
+  "autoload": {
+    "psr-4": {
+      "PSBits\\Scanner\\": "Classes/"
+    }
+  }
 }

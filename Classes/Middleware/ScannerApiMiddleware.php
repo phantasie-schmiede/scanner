@@ -22,33 +22,37 @@ final class ScannerApiMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $path = rtrim($request->getUri()->getPath(), '/');
+
         if (!str_starts_with($path, self::API_PREFIX)) {
             return $handler->handle($request);
         }
 
         $method = strtoupper($request->getMethod());
 
-        if ($path === self::API_PREFIX . '/health' && $method === 'GET') {
+        if ($path === self::API_PREFIX . '/health' && 'GET' === $method) {
             return $this->jsonSuccess([
-                'status' => 'ok',
-                'apiVersion' => ScannerApiService::API_VERSION,
+                'status'          => 'ok',
+                'apiVersion'      => ScannerApiService::API_VERSION,
                 'serverTimestamp' => gmdate(DATE_ATOM),
             ]);
         }
 
-        if ($path === self::API_PREFIX . '/capabilities' && $method === 'GET') {
+        if ($path === self::API_PREFIX . '/capabilities' && 'GET' === $method) {
             $isSecureContext = $this->isSecureRequest($request);
+
             return $this->jsonSuccess($this->scannerApiService->getCapabilities($isSecureContext));
         }
 
-        if ($path === self::API_PREFIX . '/result' && $method === 'POST') {
+        if ($path === self::API_PREFIX . '/result' && 'POST' === $method) {
             $rawBody = (string)$request->getBody();
             $payload = json_decode($rawBody, true);
+
             if (!is_array($payload)) {
                 return $this->jsonError('invalid_json', 'Invalid JSON payload.', 400);
             }
 
             $validation = $this->scannerApiService->validateResultPayload($payload);
+
             if (!$validation['isValid']) {
                 return $this->jsonError('validation_failed', 'Scan result payload validation failed.', 422, [
                     'errors' => $validation['errors'],
@@ -56,8 +60,8 @@ final class ScannerApiMiddleware implements MiddlewareInterface
             }
 
             return $this->jsonSuccess([
-                'status' => 'accepted',
-                'result' => $validation['normalized'],
+                'status'          => 'accepted',
+                'result'          => $validation['normalized'],
                 'serverTimestamp' => gmdate(DATE_ATOM),
             ]);
         }
@@ -67,11 +71,11 @@ final class ScannerApiMiddleware implements MiddlewareInterface
 
     private function isSecureRequest(ServerRequestInterface $request): bool
     {
-        $uri = $request->getUri();
+        $uri    = $request->getUri();
         $scheme = strtolower($uri->getScheme());
-        $host = strtolower($uri->getHost());
+        $host   = strtolower($uri->getHost());
 
-        return $scheme === 'https' || in_array($host, ['localhost', '127.0.0.1', '::1'], true);
+        return 'https' === $scheme || in_array($host, ['localhost', '127.0.0.1', '::1'], true);
     }
 
     /**
@@ -81,8 +85,8 @@ final class ScannerApiMiddleware implements MiddlewareInterface
     {
         return new JsonResponse([
             'success' => true,
-            'data' => $data,
-            'error' => null,
+            'data'    => $data,
+            'error'   => null,
         ], $statusCode);
     }
 
@@ -93,9 +97,9 @@ final class ScannerApiMiddleware implements MiddlewareInterface
     {
         return new JsonResponse([
             'success' => false,
-            'data' => null,
-            'error' => [
-                'code' => $code,
+            'data'    => null,
+            'error'   => [
+                'code'    => $code,
                 'message' => $message,
                 'details' => $details,
             ],

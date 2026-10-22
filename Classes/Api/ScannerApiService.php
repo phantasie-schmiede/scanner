@@ -28,20 +28,20 @@ final class ScannerApiService
     public function getCapabilities(bool $isSecureContext): array
     {
         return [
-            'apiVersion' => self::API_VERSION,
-            'formats' => self::SUPPORTED_FORMATS,
-            'modes' => [
+            'apiVersion'   => self::API_VERSION,
+            'formats'      => self::SUPPORTED_FORMATS,
+            'modes'        => [
                 'liveCamera',
                 'imageUpload',
             ],
             'requirements' => [
                 'secureContextRequired' => true,
-                'isSecureContext' => $isSecureContext,
+                'isSecureContext'       => $isSecureContext,
             ],
-            'endpoints' => [
-                'health' => '/scanner/api/' . self::API_VERSION . '/health',
+            'endpoints'    => [
+                'health'       => '/scanner/api/' . self::API_VERSION . '/health',
                 'capabilities' => '/scanner/api/' . self::API_VERSION . '/capabilities',
-                'result' => '/scanner/api/' . self::API_VERSION . '/result',
+                'result'       => '/scanner/api/' . self::API_VERSION . '/result',
             ],
         ];
     }
@@ -55,40 +55,44 @@ final class ScannerApiService
         $errors = [];
 
         $content = trim((string)($payload['content'] ?? ''));
-        if ($content === '') {
+
+        if ('' === $content) {
             $errors[] = 'Field "content" must be a non-empty string.';
-        } elseif (mb_strlen($content) > 1024) {
+        } elseif (1024 < mb_strlen($content)) {
             $errors[] = 'Field "content" exceeds maximum length of 1024.';
         }
 
         $format = strtolower(trim((string)($payload['format'] ?? '')));
-        if ($format === '') {
+
+        if ('' === $format) {
             $errors[] = 'Field "format" must be set.';
         } elseif (!in_array($format, self::SUPPORTED_FORMATS, true)) {
             $errors[] = 'Field "format" is not supported.';
         }
 
         $source = strtolower(trim((string)($payload['source'] ?? 'camera')));
+
         if (!in_array($source, ['camera', 'image'], true)) {
             $errors[] = 'Field "source" must be either "camera" or "image".';
         }
 
         $clientTimestamp = trim((string)($payload['clientTimestamp'] ?? ''));
-        if ($clientTimestamp !== '' && strtotime($clientTimestamp) === false) {
+
+        if ('' !== $clientTimestamp && false === strtotime($clientTimestamp)) {
             $errors[] = 'Field "clientTimestamp" must be a valid date/time string.';
         }
 
         $normalized = [
-            'content' => $content,
-            'format' => $format,
-            'source' => $source,
+            'content'         => $content,
+            'format'          => $format,
+            'source'          => $source,
             'clientTimestamp' => $clientTimestamp,
-            'meta' => is_array($payload['meta'] ?? null) ? $payload['meta'] : [],
+            'meta'            => is_array($payload['meta'] ?? null) ? $payload['meta'] : [],
         ];
 
         return [
-            'isValid' => $errors === [],
-            'errors' => $errors,
+            'isValid'    => [] === $errors,
+            'errors'     => $errors,
             'normalized' => $normalized,
         ];
     }

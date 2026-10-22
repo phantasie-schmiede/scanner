@@ -3,6 +3,18 @@
 
     const DEFAULT_FORMATS = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39', 'itf', 'codabar'];
 
+    // Maps the scanner format names to the canonical zxing-wasm format names.
+    const ZXING_FORMATS = {
+        ean_13: 'EAN13',
+        ean_8: 'EAN8',
+        upc_a: 'UPCA',
+        upc_e: 'UPCE',
+        code_128: 'Code128',
+        code_39: 'Code39',
+        itf: 'ITF',
+        codabar: 'Codabar',
+    };
+
     class ScannerClient {
         constructor(rootElement, options = {}) {
             if (!rootElement) {
@@ -12,6 +24,7 @@
             this.root = rootElement;
             this.options = {
                 apiBase: options.apiBase || this.root.dataset.apiBase || '/scanner/api/v1',
+                zxingWasm: options.zxingWasm || this.root.dataset.zxingWasm || '',
                 formats: Array.isArray(options.formats) && options.formats.length > 0 ? options.formats : DEFAULT_FORMATS,
                 autoSubmitResult: options.autoSubmitResult !== false,
                 onScan: options.onScan || null,
@@ -34,8 +47,21 @@
 
         async init() {
             this.bindUi();
+            this.configureZxingWasm();
             await this.emitCapabilities();
             this.emit('ready', { apiBase: this.options.apiBase, formats: this.options.formats });
+        }
+
+        configureZxingWasm() {
+            if (
+                typeof global.ZXingWASM === 'object' &&
+                typeof global.ZXingWASM.setZXingModuleOverrides === 'function' &&
+                this.options.zxingWasm
+            ) {
+                global.ZXingWASM.setZXingModuleOverrides({
+                    locateFile: () => this.options.zxingWasm,
+                });
+            }
         }
 
         bindUi() {
@@ -187,79 +213,61 @@
                         source: sourceType,
                         clientTimestamp: new Date().toISOString(),
                         meta: {
-                            mode: this.detector ? 'barcode_detector' : 'unknown',
+                            mode: 'barcode_detector',
                         },
                     };
                 }
             }
 
-            if (global.Quagga && typeof global.Quagga.decodeSingle === 'function') {
-                return await this.detectFromImageWithQuagga(source);
+            return await this.detectFromSourceWithZxing(source, sourceType);
+        }
+
+        async detectFromSourceWithZxing(source, sourceType) {
+            if (typeof global.ZXingWASM !== 'object' || typeof global.ZXingWASM.readBarcodes !== 'function') {
+                return null;
             }
 
-            return null;
-        }
+            try {
+                const image = await this.toImageData(source);
+                const formats = this.options.formats.map((format) => ZXING_FORMATS[format]).filter(Boolean);
+                const results = await global.ZXingWASM.readBarcodes(image, { formats });
+                const result = results.find((item) => item.isValid && item.text) || null;
+                if (!result) {
+                    return null;
+                }
 
-        async detectFromImageWithQuagga(image) {
-            const canvas = document.createElement('canvas');
-            canvas.width = image.naturalWidth || image.videoWidth || image.width;
-            canvas.height = image.naturalHeight || image.videoHeight || image.height;
-            const context = canvas.getContext('2d');
-            context.drawImage(image, 0, 0);
-
-            const dataUrl = canvas.toDataURL('image/png');
-
-            return await new Promise((resolve) => {
-                global.Quagga.decodeSingle(
-                    {
-                        src: dataUrl,
-                        numOfWorkers: 0,
-                        decoder: {
-                            readers: [
-                                'ean_reader',
-                                'ean_8_reader',
-                                'upc_reader',
-                                'upc_e_reader',
-                                'code_128_reader',
-                                'code_39_reader',
-                                'i2of5_reader',
-                                'codabar_reader',
-                            ],
-                        },
+                return {
+                    content: result.text,
+                    format: this.mapZxingFormat(result.format),
+                    source: sourceType,
+                    clientTimestamp: new Date().toISOString(),
+                    meta: {
+                        mode: 'zxing_wasm',
                     },
-                    (result) => {
-                        if (result && result.codeResult && result.codeResult.code) {
-                            resolve({
-                                content: result.codeResult.code,
-                                format: this.mapQuaggaFormat(result.codeResult.format),
-                                source: 'image',
-                                clientTimestamp: new Date().toISOString(),
-                                meta: {
-                                    mode: 'quagga2',
-                                },
-                            });
-                            return;
-                        }
+                };
+            } catch (error) {
+                this.emitError('zxing_wasm_failed', error);
 
-                        resolve(null);
-                    }
-                );
-            });
+                return null;
+            }
         }
 
-        mapQuaggaFormat(quaggaFormat) {
-            const formatMap = {
-                ean_13: 'ean_13',
-                ean_8: 'ean_8',
-                upc_a: 'upc_a',
-                upc_e: 'upc_e',
-                code_128: 'code_128',
-                code_39: 'code_39',
-                i2of5: 'itf',
-                codabar: 'codabar',
-            };
+        async toImageData(source) {
+            const width = source.naturalWidth || source.videoWidth || source.width;
+            const height = source.naturalHeight || source.videoHeight || source.height;
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const context = canvas.getContext('2d');
+            context.drawImage(source, 0, 0);
 
-            return formatMap[(quaggaFormat || '').toLowerCase()] || 'code_128';
+            return context.getImageData(0, 0, width, height);
+        }
+
+        mapZxingFormat(zxingFormat) {
+            const entry = Object.entries(ZXING_FORMATS).find(([, zxingName]) => zxingName === zxingFormat);
+
+            return entry ? entry[0] : 'unknown';
         }
 
         async handleScanResult(result) {

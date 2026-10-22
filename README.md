@@ -86,4 +86,4 @@ Supported formats:
 ## Compatibility
 
 - TYPO3: `11.5`, `12.4`, `13.4`
-- Browser: modern browsers with `getUserMedia`; preferred with `BarcodeDetector`; fallback image decoding via Quagga2.
+- Browser: modern browsers with `getUserMedia`; preferred with `BarcodeDetector`; fallback decoding via the vendored zxing-wasm reader.

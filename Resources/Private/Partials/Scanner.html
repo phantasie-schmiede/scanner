@@ -1,9 +1,12 @@
 <html data-namespace-typo3-fluid="true"
       xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers">
-<f:asset.script identifier="psbits-scanner-quagga" src="EXT:scanner/Resources/Public/JavaScript/quagga2.min.js" />
+<f:asset.script identifier="psbits-scanner-zxing" src="EXT:scanner/Resources/Public/JavaScript/Vendors/zxing-wasm/zxing_reader.js" />
 <f:asset.script identifier="psbits-scanner-api" src="EXT:scanner/Resources/Public/JavaScript/scanner-api.js" />
 
-<div data-psbits-scanner data-api-base="/scanner/api/v1">
+<div
+    data-psbits-scanner
+    data-api-base="/scanner/api/v1"
+    data-zxing-wasm="{f:uri.resource(path: 'JavaScript/Vendors/zxing-wasm/zxing_reader.wasm')}">
     <div>
         <button type="button" data-scanner-start>Kamera starten</button>
         <button type="button" data-scanner-stop>Kamera stoppen</button>

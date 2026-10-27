@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace PSBits\Scanner\Tests\Unit\Middleware;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 use PSBits\Scanner\Middleware\ScannerApiMiddleware;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -20,8 +20,14 @@ use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\CMS\Core\Http\Uri;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
-final class ScannerApiMiddlewareTest extends TestCase
+/**
+ * Class ScannerApiMiddlewareTest
+ *
+ * @package PSBits\Scanner\Tests\Unit\Middleware
+ */
+final class ScannerApiMiddlewareTest extends UnitTestCase
 {
     private ScannerApiMiddleware $middleware;
     private RequestHandlerInterface $requestHandler;
@@ -39,7 +45,8 @@ final class ScannerApiMiddlewareTest extends TestCase
         };
     }
 
-    public function testRequestsWithoutTheApiPrefixArePassedThrough(): void
+    #[Test]
+    public function requestsWithoutTheApiPrefixArePassedThrough(): void
     {
         $request = $this->createRequest('GET', 'https://example.com/any/page');
         $response = $this->middleware->process($request, $this->requestHandler);
@@ -49,7 +56,8 @@ final class ScannerApiMiddlewareTest extends TestCase
         self::assertTrue($payload['passedThrough']);
     }
 
-    public function testHealthEndpointReturnsTheApiVersion(): void
+    #[Test]
+    public function healthEndpointReturnsTheApiVersion(): void
     {
         $request = $this->createRequest('GET', 'https://example.com/scanner/api/v1/health');
         $response = $this->middleware->process($request, $this->requestHandler);
@@ -62,7 +70,8 @@ final class ScannerApiMiddlewareTest extends TestCase
         self::assertSame('v1', $payload['data']['apiVersion']);
     }
 
-    public function testCapabilitiesEndpointReportsSecureContexts(): void
+    #[Test]
+    public function capabilitiesEndpointReportsSecureContexts(): void
     {
         $request = $this->createRequest('GET', 'https://example.com/scanner/api/v1/capabilities');
         $payload = $this->getPayload($this->middleware->process($request, $this->requestHandler));
@@ -71,7 +80,8 @@ final class ScannerApiMiddlewareTest extends TestCase
         self::assertSame('v1', $payload['data']['apiVersion']);
     }
 
-    public function testCapabilitiesEndpointTreatsLocalhostAsSecure(): void
+    #[Test]
+    public function capabilitiesEndpointTreatsLocalhostAsSecure(): void
     {
         $request = $this->createRequest('GET', 'http://127.0.0.1/scanner/api/v1/capabilities');
         $payload = $this->getPayload($this->middleware->process($request, $this->requestHandler));
@@ -79,7 +89,28 @@ final class ScannerApiMiddlewareTest extends TestCase
         self::assertTrue($payload['data']['requirements']['isSecureContext']);
     }
 
-    public function testCapabilitiesEndpointReportsNonSecureContexts(): void
+    #[Test]
+    public function capabilitiesEndpointTreatsTheLocalhostHostnameAsSecure(): void
+    {
+        $request = $this->createRequest('GET', 'http://localhost/scanner/api/v1/capabilities');
+        $payload = $this->getPayload($this->middleware->process($request, $this->requestHandler));
+
+        self::assertTrue($payload['data']['requirements']['isSecureContext']);
+    }
+
+    #[Test]
+    public function apiRoutesAcceptATrailingSlash(): void
+    {
+        $request  = $this->createRequest('GET', 'https://example.com/scanner/api/v1/health/');
+        $response = $this->middleware->process($request, $this->requestHandler);
+
+        $payload = $this->getPayload($response);
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame('ok', $payload['data']['status']);
+    }
+
+    #[Test]
+    public function capabilitiesEndpointReportsNonSecureContexts(): void
     {
         $request = $this->createRequest('GET', 'http://example.com/scanner/api/v1/capabilities');
         $payload = $this->getPayload($this->middleware->process($request, $this->requestHandler));
@@ -87,7 +118,8 @@ final class ScannerApiMiddlewareTest extends TestCase
         self::assertFalse($payload['data']['requirements']['isSecureContext']);
     }
 
-    public function testResultEndpointAcceptsValidPayloads(): void
+    #[Test]
+    public function resultEndpointAcceptsValidPayloads(): void
     {
         $request = $this->createJsonRequest('POST', 'https://example.com/scanner/api/v1/result', [
             'content' => '9780201379624',
@@ -104,7 +136,8 @@ final class ScannerApiMiddlewareTest extends TestCase
         self::assertSame('ean_13', $payload['data']['result']['format']);
     }
 
-    public function testResultEndpointRejectsInvalidJson(): void
+    #[Test]
+    public function resultEndpointRejectsInvalidJson(): void
     {
         $request = $this->createJsonRequest('POST', 'https://example.com/scanner/api/v1/result', 'not-json');
         $response = $this->middleware->process($request, $this->requestHandler);
@@ -115,7 +148,8 @@ final class ScannerApiMiddlewareTest extends TestCase
         self::assertSame('invalid_json', $payload['error']['code']);
     }
 
-    public function testResultEndpointRejectsInvalidPayloads(): void
+    #[Test]
+    public function resultEndpointRejectsInvalidPayloads(): void
     {
         $request = $this->createJsonRequest('POST', 'https://example.com/scanner/api/v1/result', [
             'content' => '',
@@ -131,7 +165,8 @@ final class ScannerApiMiddlewareTest extends TestCase
         self::assertNotEmpty($payload['error']['details']['errors']);
     }
 
-    public function testResultEndpointRejectsGetRequests(): void
+    #[Test]
+    public function resultEndpointRejectsGetRequests(): void
     {
         $request = $this->createRequest('GET', 'https://example.com/scanner/api/v1/result');
         $response = $this->middleware->process($request, $this->requestHandler);
@@ -139,7 +174,8 @@ final class ScannerApiMiddlewareTest extends TestCase
         self::assertSame(404, $response->getStatusCode());
     }
 
-    public function testUnknownApiRoutesReturnNotFound(): void
+    #[Test]
+    public function unknownApiRoutesReturnNotFound(): void
     {
         $request = $this->createRequest('GET', 'https://example.com/scanner/api/v1/unknown');
         $response = $this->middleware->process($request, $this->requestHandler);

@@ -99,6 +99,15 @@ final class ScannerApiMiddlewareTest extends UnitTestCase
     }
 
     #[Test]
+    public function capabilitiesEndpointTreatsTheIpv6LoopbackAsSecure(): void
+    {
+        $request = $this->createRequest('GET', 'http://[::1]/scanner/api/v1/capabilities');
+        $payload = $this->getPayload($this->middleware->process($request, $this->requestHandler));
+
+        self::assertTrue($payload['data']['requirements']['isSecureContext']);
+    }
+
+    #[Test]
     public function apiRoutesAcceptATrailingSlash(): void
     {
         $request  = $this->createRequest('GET', 'https://example.com/scanner/api/v1/health/');

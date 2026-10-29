@@ -12,10 +12,16 @@ declare(strict_types=1);
 namespace PSBits\Scanner\Tests\Unit\Api;
 
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 use PSBits\Scanner\Api\ScannerApiService;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
-final class ScannerApiServiceTest extends TestCase
+/**
+ * Class ScannerApiServiceTest
+ *
+ * @package PSBits\Scanner\Tests\Unit\Api
+ */
+final class ScannerApiServiceTest extends UnitTestCase
 {
     private ScannerApiService $service;
 
@@ -26,7 +32,8 @@ final class ScannerApiServiceTest extends TestCase
         $this->service = new ScannerApiService();
     }
 
-    public function testCapabilitiesContainTheExpectedContract(): void
+    #[Test]
+    public function capabilitiesContainTheExpectedContract(): void
     {
         $capabilities = $this->service->getCapabilities(false);
 
@@ -54,13 +61,15 @@ final class ScannerApiServiceTest extends TestCase
         );
     }
 
-    public function testCapabilitiesReportTheSecureContext(): void
+    #[Test]
+    public function capabilitiesReportTheSecureContext(): void
     {
         self::assertTrue($this->service->getCapabilities(true)['requirements']['isSecureContext']);
     }
 
     #[DataProvider('validPayloadProvider')]
-    public function testPayloadValidationAcceptsValidPayloads(array $payload, array $expected): void
+    #[Test]
+    public function payloadValidationAcceptsValidPayloads(array $payload, array $expected): void
     {
         $validation = $this->service->validateResultPayload($payload);
 
@@ -142,7 +151,8 @@ final class ScannerApiServiceTest extends TestCase
         return $payloads;
     }
 
-    public function testPayloadValidationRejectsMissingContent(): void
+    #[Test]
+    public function payloadValidationRejectsMissingContent(): void
     {
         $validation = $this->service->validateResultPayload(['format' => 'ean_13']);
 
@@ -150,7 +160,8 @@ final class ScannerApiServiceTest extends TestCase
         self::assertStringContainsString('content', $validation['errors'][0]);
     }
 
-    public function testPayloadValidationRejectsBlankContent(): void
+    #[Test]
+    public function payloadValidationRejectsBlankContent(): void
     {
         $validation = $this->service->validateResultPayload([
             'content' => '   ',
@@ -161,7 +172,8 @@ final class ScannerApiServiceTest extends TestCase
         self::assertStringContainsString('content', $validation['errors'][0]);
     }
 
-    public function testPayloadValidationRejectsContentExceedingTheMaximumLength(): void
+    #[Test]
+    public function payloadValidationRejectsContentExceedingTheMaximumLength(): void
     {
         $validation = $this->service->validateResultPayload([
             'content' => str_repeat('1', 1025),
@@ -172,7 +184,8 @@ final class ScannerApiServiceTest extends TestCase
         self::assertStringContainsString('1024', $validation['errors'][0]);
     }
 
-    public function testPayloadValidationRejectsMissingFormat(): void
+    #[Test]
+    public function payloadValidationRejectsMissingFormat(): void
     {
         $validation = $this->service->validateResultPayload(['content' => '9780201379624']);
 
@@ -180,7 +193,8 @@ final class ScannerApiServiceTest extends TestCase
         self::assertStringContainsString('format', $validation['errors'][0]);
     }
 
-    public function testPayloadValidationRejectsUnsupportedFormat(): void
+    #[Test]
+    public function payloadValidationRejectsUnsupportedFormat(): void
     {
         $validation = $this->service->validateResultPayload([
             'content' => '9780201379624',
@@ -191,7 +205,8 @@ final class ScannerApiServiceTest extends TestCase
         self::assertStringContainsString('format', $validation['errors'][0]);
     }
 
-    public function testPayloadValidationRejectsUnsupportedSource(): void
+    #[Test]
+    public function payloadValidationRejectsUnsupportedSource(): void
     {
         $validation = $this->service->validateResultPayload([
             'content' => '9780201379624',
@@ -203,7 +218,8 @@ final class ScannerApiServiceTest extends TestCase
         self::assertStringContainsString('source', $validation['errors'][0]);
     }
 
-    public function testPayloadValidationRejectsInvalidClientTimestamps(): void
+    #[Test]
+    public function payloadValidationRejectsInvalidClientTimestamps(): void
     {
         $validation = $this->service->validateResultPayload([
             'content' => '9780201379624',
@@ -216,7 +232,8 @@ final class ScannerApiServiceTest extends TestCase
         self::assertStringContainsString('clientTimestamp', $validation['errors'][0]);
     }
 
-    public function testPayloadValidationNormalizesNonArrayMetaToAnEmptyArray(): void
+    #[Test]
+    public function payloadValidationNormalizesNonArrayMetaToAnEmptyArray(): void
     {
         $validation = $this->service->validateResultPayload([
             'content' => '9780201379624',

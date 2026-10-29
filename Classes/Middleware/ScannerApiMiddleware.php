@@ -73,7 +73,7 @@ final class ScannerApiMiddleware implements MiddlewareInterface
     {
         $uri    = $request->getUri();
         $scheme = strtolower($uri->getScheme());
-        $host   = strtolower($uri->getHost());
+        $host   = strtolower(trim($uri->getHost(), '[]'));
 
         return 'https' === $scheme || in_array($host, ['localhost', '127.0.0.1', '::1'], true);
     }
